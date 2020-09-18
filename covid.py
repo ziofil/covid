@@ -3,6 +3,7 @@ import world_bank_data as wb
 import pandas as pd
 import numpy as np
 import webbrowser
+import argparse
 
 
 def download_data(url:str, name:str):
@@ -71,6 +72,11 @@ def line(df, log_scale:bool=False, relative_to_pop:bool=False):
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(description='Make covid charts.')
+    parser.add_argument('--browser', '-b', type=str, required=False, default=None, help='the path to a browser for chart visualization')
+    args = parser.parse_args()
+
+    print("🦠 downloading data...")
     confirmed = download_data('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv', 'Confirmed cases')
     deaths = download_data('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv', 'Deaths')
 
@@ -78,6 +84,7 @@ if __name__ == "__main__":
     pop.rename(index={'United States':'US'},inplace=True)
     pop.rename(index={'Russian Federation':'Russia'},inplace=True)
 
+    print("📈 generating graphs...")
     countries = ['US', 'Brazil', 'Spain', 'Italy', 'France', 'Russia', 'United Kingdom', 'India', 'Germany', 'Cyprus']
     df_new_absolute = select_countries(countries, new_cases=True, relative_to_pop=False, moving_avg_days=7)
     df_new_relative = select_countries(countries, new_cases=True, relative_to_pop=True, moving_avg_days=7)
@@ -89,12 +96,14 @@ if __name__ == "__main__":
     line_total_absolute = line(df_total_absolute, log_scale = False, relative_to_pop=False).properties(width=900, height=500, title='Absolute total Cases/deaths')
     line_total_relative = line(df_total_relative, log_scale = False, relative_to_pop=True).properties(width=900, height=500, title='Relative total Cases/deaths')
 
+    print("📥 saving graphs to html...")
     line_new_absolute.save('new_cases_absolute.html')
     line_new_relative.save('new_cases_relative.html')
     line_total_absolute.save('total_cases_absolute.html')
     line_total_relative.save('total_cases_relative.html')
 
-    webbrowser.get("open -a /Applications/Firefox.app %s").open('new_cases_absolute.html',1)
-    webbrowser.get("open -a /Applications/Firefox.app %s").open('new_cases_relative.html',2)
-    webbrowser.get("open -a /Applications/Firefox.app %s").open('total_cases_absolute.html',3)
-    webbrowser.get("open -a /Applications/Firefox.app %s").open('total_cases_relative.html',4)
+    if args.browser is not None:
+        webbrowser.get(f"open -a {args.browser} %s").open('new_cases_absolute.html',1)
+        webbrowser.get(f"open -a {args.browser} %s").open('new_cases_relative.html',2)
+        webbrowser.get(f"open -a {args.browser} %s").open('total_cases_absolute.html',3)
+        webbrowser.get(f"open -a {args.browser} %s").open('total_cases_relative.html',4)
