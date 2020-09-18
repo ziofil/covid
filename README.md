@@ -1,6 +1,7 @@
 # covid
-Altair interactive visualization of current COVID trends. It generates new (absolute and relative) and total (absolute and relative) charts for the desired countries.
-(shift-)click on the legend items to selectively visualize and compare the trends.
+Altair interactive visualizations of current COVID trends. The script pulls data from [JHU](https://github.com/CSSEGISandData/COVID-19) and generates new and total (absolute and relative to population) cases and deaths visualizations for the desired countries. It then opens the interactive charts in four new browser tabs.
+
+You can (shift-)click on the legend items to selectively visualize and compare the trends.
 
 # Usage
 1. Edit `covid.py` with the desired countries
