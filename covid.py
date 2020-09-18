@@ -1,26 +1,24 @@
-import altair as alt
-import world_bank_data as wb
 import pandas as pd
 import numpy as np
+import altair as alt
+import world_bank_data as wb
 import webbrowser
 import argparse
+from typing import List
 
 
-def download_data(url:str, name:str):
+def download_data(url:str, name:str) -> pd.DataFrame:
     data = pd.read_csv(url)
     data.index.name = name + ' as of ' + pd.to_datetime(data.columns[-1]).strftime('%d-%m-%Y')
-    
     world = data.drop(['Lat','Long','Province/State','Country/Region'], axis=1)
     world['Lat'] = None
     world['Long'] = None
     world['Province/State'] = None
     world['Country/Region'] = 'World'
     data = data.append(world)
-
     return data
 
-
-def cleanup_data(df, countries, new_cases, relative_to_pop):
+def cleanup_data(df:pd.DataFrame, countries:List[str], new_cases:bool, relative_to_pop:bool) -> pd.DataFrame:
     df = df[(df['Country/Region'].isin(countries)) & (confirmed['Province/State'].isna())]
     raw = df.T
     raw.columns = df['Country/Region']
@@ -30,19 +28,15 @@ def cleanup_data(df, countries, new_cases, relative_to_pop):
     df = df/pop[pop.index.isin(countries)] if relative_to_pop else df
     return df
 
-def select_countries(countries:list, new_cases=False, relative_to_pop=False, moving_avg_days=1):
-    
+def select_countries(countries:list, new_cases:bool=False, relative_to_pop:bool=False, moving_avg_days:int=1) -> pd.DataFrame:
     conf = cleanup_data(confirmed, countries, new_cases, relative_to_pop)
     dead = cleanup_data(deaths, countries, new_cases, relative_to_pop)
-    
     col = pd.MultiIndex.from_arrays([['Confirmed']*len(conf.columns) + ['Deaths']*len(conf.columns), list(conf.columns)*2])
     both = pd.concat([conf, dead], axis=1)
     both.columns = col
     both.index.name = 'Dates'
-    
     both = both.rolling(moving_avg_days).mean()
     both = both.reset_index().melt('Dates', var_name=['Mode','Country'], value_name='cases').dropna()
-    
     return both.dropna()
 
 
@@ -59,14 +53,12 @@ def line(df, log_scale:bool=False, relative_to_pop:bool=False):
     
     country = alt.selection_multi(fields=['Country'], bind='legend')
     mode = alt.selection_single(fields=['Mode'], bind='legend')
-    
     chart = alt.Chart(df).mark_line(interpolate='basis').encode(
     x='Dates:T',
     y = alt.Y('cases:Q', scale=scale, axis=axis),
     color=alt.Color('Country:N', scale=alt.Scale(domain=list(df.Country.unique()))),
     strokeDash=alt.Opacity('Mode:N', scale=alt.Scale(domain=list(df.Mode.unique())))
     ).add_selection(country, mode).transform_filter(country).transform_filter(mode)
-                      
     return chart
 
 
