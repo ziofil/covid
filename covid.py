@@ -99,3 +99,5 @@ if __name__ == "__main__":
         webbrowser.get(f"open -a {args.browser} %s").open('new_cases_relative.html',2)
         webbrowser.get(f"open -a {args.browser} %s").open('total_cases_absolute.html',3)
         webbrowser.get(f"open -a {args.browser} %s").open('total_cases_relative.html',4)
+
+    print("done. be safe 😷")
