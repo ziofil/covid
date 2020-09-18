@@ -1,5 +1,5 @@
 # covid
-Altair visualization of current COVID trends
+Altair interactive visualization of current COVID trends. It generates new (absolute and relative) and total (absolute and relative) charts for the desired countries.
 
 # Usage
 1. Edit `covid.py` with the desired countries
