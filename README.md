@@ -5,7 +5,7 @@ You can (shift-)click on the legend items to selectively visualize and compare t
 
 # Usage
 1. Edit `covid.py` with the desired countries
-2. Execute `python covid.py --browser path/to/browser/executable` from the shell (browser arg is optional)
+2. Execute `python covid.py --browser path/to/browser/executable` from the shell (if browser arg is unused, the graphs are still saved as html files)
 
 # Example:
 ![example graph](https://github.com/ziofil/covid/blob/master/example.png)
