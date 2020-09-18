@@ -1,5 +1,6 @@
 # covid
 Altair interactive visualization of current COVID trends. It generates new (absolute and relative) and total (absolute and relative) charts for the desired countries.
+(shift-)click on the legend items to selectively visualize and compare the trends.
 
 # Usage
 1. Edit `covid.py` with the desired countries
